@@ -1,0 +1,35 @@
+name: Shell tests
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  shelltests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: erlef/setup-beam@v1
+      with:
+          otp-version: '24.0.1'
+          elixir-version: '1.12'
+    - name: Compile
+      run: ./bootstrap
+    - name: Install
+      run: |
+        sudo cp ./rebar3 /usr/local/bin/
+
+    - name: Checkout shell tests
+      run: git clone https://github.com/tsloughter/rebar3_tests
+
+    - name: Install and run shelltestrunner
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shelltestrunner build-essential
+        cd rebar3_tests
+        mix local.hex --force
+        ./run_tests.sh

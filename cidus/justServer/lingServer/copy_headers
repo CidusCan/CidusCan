@@ -1,0 +1,21 @@
+#!/usr/bin/env escript
+
+-define(LargePath,"./_build/default/lib/lager/ebin").
+-define(Destination,"./_build/default/lib/lingServer/ebin").
+-define(AllPath,[?LargePath]).
+
+main(_Arg)->
+    dealPath(?AllPath).
+
+dealPath([H|T])->
+    {ok,AllFile}=file:list_dir(H),
+    do_copy(H,AllFile),
+    dealPath(T);
+dealPath([])->
+    ok.
+
+do_copy(Path,[FileName|T])->
+    file:copy(filename:join(Path,FileName),filename:join(?Destination,FileName)),
+    do_copy(Path,T);
+do_copy(_,[])->
+ ok.
